@@ -12,13 +12,19 @@ public enum MyEnum implements Serializable,Cloneable {
 
     // jdk1.5开始支持枚举
     // 枚举类不能继承(extend)，但是可以实现接口
+    // 枚举可以有全局属性，构造方法，但都必须定义在枚举成员之后，且此时枚举成员需要以分号结尾
+
+    // 枚举成员
     YORK(20),HELEN,JACK,TOM,SMITH;
 
+    // 全局属性
     private Integer age;
 
+    // 无参构造方法
     MyEnum(){
     }
 
+    // 有参构造方法
     MyEnum(int age) {
         this.age = age;
     }
@@ -32,8 +38,20 @@ public enum MyEnum implements Serializable,Cloneable {
     }
 
     public static void main(String[] args) {
-        Integer age = MyEnum.HELEN.age;
-        System.out.println(age);
+        MyEnum myEnum = MyEnum.HELEN;
+        System.out.println(myEnum.age);
+        String name = "";
+        switch (name){
+            case "helen":
+                break;
+            default:
+                break;
+        }
+        switch (myEnum){
+            case HELEN:
+
+
+        }
     }
 
 }
