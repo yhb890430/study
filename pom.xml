@@ -15,6 +15,7 @@
         <module>study-common</module>
         <module>StudyMybatis</module>
         <module>StudyNetty</module>
+        <module>StudyWebService</module>
     </modules>
 
     
