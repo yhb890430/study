@@ -15,6 +15,6 @@ public class ServicePublish {
 
     public static void main(String[] args) {
         Endpoint.publish("http://127.0.0.1:8088/HelloWebService",new HelloWebService());
-//        Endpoint.publish("http://127.0.0.1:8088/test",new UserWebService());
+//        Endpoint.publish("http://127.0.0.1:8088/UserWebService",new UserWebService());
     }
 }

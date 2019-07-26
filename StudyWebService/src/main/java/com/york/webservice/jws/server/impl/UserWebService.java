@@ -11,7 +11,7 @@ import javax.jws.WebService;
  * @date: 2019/7/19 11:38
  * @version: <1.0>
  */
-@WebService
+@WebService(name="User",serviceName = "UserWebService",portName = "UserPort",targetNamespace = "http://user.york.com")
 public class UserWebService {
 
     @WebMethod(operationName = "saveUser")
