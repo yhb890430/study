@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./threejs/build/three.js"></script>
+    <script src="./threejs/examples/js/libs/stats.min.js"></script>
+    <script src="./threejs/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="./threejs/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="./threejs/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+<div id="container"></div>
+</body>
+<script type="text/javascript">
+
+    var camera, scene, renderer,stats;
+
+    var container = document.querySelector( '#container' );
+
+    init();
+
+    animate();
+
+    function init() {
+        // 场景
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color( 0xFF0000);
+
+        new THREE.Color( 0xFF0000).getHexString()
+        // 相机
+        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.01, 1000 );
+        // camera.lookAt(new THREE.Vector3(0, 0, 0));
+        scene.add(camera);
+
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.physicallyCorrectLights = true;
+        renderer.gammaOutput = true;
+        renderer.gammaFactor = 2.2;
+        renderer.setClearColor( 0xcccccc );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        let controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls.autoRotate = false;
+        controls.autoRotateSpeed = -10;
+        controls.screenSpacePanning = true;
+        // controls.update();
+        container.appendChild(renderer.domElement);
+        
+        let loader = new THREE.GLTFLoader();
+        THREE.DRACOLoader.setDecoderPath( './threejs/examples/js/libs/draco/' );
+        loader.setDRACOLoader( new THREE.DRACOLoader());
+
+        loader.load(
+            './g524.gltf',
+            function (gltf) {
+                console.log(gltf.scene);
+                var object = gltf.scene||gltf.scene[0]
+
+                const box = new THREE.Box3().setFromObject(object);
+                const size = box.getSize(new THREE.Vector3()).length();
+                console.log(size);
+                const center = box.getCenter(new THREE.Vector3());
+
+                // object.position.x += (object.position.x - center.x);
+                // object.position.y += (object.position.y - center.y);
+                // object.position.z += (object.position.z - center.z);
+                // controls.maxDistance = size * 10;
+                camera.near = size / 100;
+                camera.far = size * 100;
+                camera.updateProjectionMatrix();
+
+                // if (this.options.cameraPosition) {
+                //
+                //     camera.position.fromArray( this.options.cameraPosition );
+                //     camera.lookAt( new THREE.Vector3() );
+                //
+                // } else {
+
+                    camera.position.copy(center);
+                    camera.position.x += size / 2.0;
+                    camera.position.y += size / 5.0;
+                    camera.position.z += size / 2.0;
+                    camera.lookAt(center);
+
+                // }
+                scene.add(object);
+            }
+        );
+
+        
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        stats = new Stats();
+        container.appendChild( stats.dom );
+
+        this.animate = this.animate.bind(this);
+        requestAnimationFrame( this.animate );
+
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene,camera);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+    }
+</script>
+</html>
