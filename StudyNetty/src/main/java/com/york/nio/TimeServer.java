@@ -23,6 +23,7 @@ public class TimeServer {
                     e.printStackTrace();
                 }
             }
+            System.out.println(port);
             // 启动服务端，并通过多路复用器不断接收和处理来自客户端的消息
             MultiplexerTimeServer timeServer = new MultiplexerTimeServer(port);
             new Thread(timeServer,"Nio-TimeServer-Thread-001").start();

@@ -1,5 +1,7 @@
 package com.york.nio;
 
+import io.netty.buffer.ByteBuf;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -23,15 +25,14 @@ public class MultiplexerTimeServer implements Runnable {
 
     private ServerSocketChannel server;
 
-    private Integer port;
-
     /**
      * 用于停止服务端，所以需要保证内存可见性
      */
-    private volatile Boolean stop;
+    private volatile boolean stop;
 
     public MultiplexerTimeServer(Integer port) {
         try {
+            System.out.println(port);
             // 初始化IO多路复用器(Java 采用epoll代替select)
             // 多路复用器可以通过轮询的方式不间断处理来自客户端请求
             selector = Selector.open();
@@ -67,7 +68,7 @@ public class MultiplexerTimeServer implements Runnable {
         while(!stop){
             try {
                 // 选择准备好进行I/O操作通道对应的键，该操作为阻塞操作
-                selector.select(1000);
+                selector.select();
                 // 获取已经选择的键集，可从该键集中移除键，但不能添加键，否则会报错，
                 Set<SelectionKey> keySet = selector.selectedKeys();
                 Iterator<SelectionKey> iterator = keySet.iterator();
@@ -79,9 +80,9 @@ public class MultiplexerTimeServer implements Runnable {
                         handleInput(key);
                     } catch (Exception e){
                         e.printStackTrace();
+                        // 某个客户端连接处理异常时，关闭改客户端连接
                         if(key != null){
                             key.cancel();
-                            // 关闭客户端连接
                             if(key.channel() != null){
                                 key.channel().close();
                             }
@@ -108,7 +109,9 @@ public class MultiplexerTimeServer implements Runnable {
         if(key.isValid()){
             // 准备好接收来自客户端的请求
             if(key.isAcceptable()){
+                System.out.println(222);
                 ServerSocketChannel server = (ServerSocketChannel) key.channel();
+                // 获取来自客户端的连接
                 SocketChannel client = server.accept();
                 // 设置客户端非阻塞
                 client.configureBlocking(false);
@@ -117,8 +120,15 @@ public class MultiplexerTimeServer implements Runnable {
             }
             // 准备好读取客户端的内容
             if(key.isReadable()){
+                System.out.println(1111);
                 SocketChannel client = (SocketChannel)key.channel();
+                // 创建1kb的缓冲区用于接收数据
                 ByteBuffer readBuffer = ByteBuffer.allocate(1024);
+                if(!client.isOpen()){
+                    System.out.println(3333);
+                    key.cancel();
+                    client.close();
+                }
                 // 返回读取的字节数
                 int readBytes = client.read(readBuffer);
                 if(readBytes > 0){
