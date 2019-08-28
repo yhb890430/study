@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 // @Scope(value = "prototype")
 public class UserController {
 
+    // Spring 每个新的请求都会创建一个新的线程去执行
     @GetMapping
     @ResponseBody
     public String getUser(){
