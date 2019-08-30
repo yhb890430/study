@@ -137,10 +137,4 @@ public class XSSFDemo {
         }
     }
 
-
-    public static void main(String[] args) {
-        XSSFDemo demo = new XSSFDemo();
-        demo.readDemo();
-    }
-
 }
