@@ -30,28 +30,30 @@ public class HSSFDemo {
      * HSSF组件读excel文件示例
      */
     public void readDemo(){
+        FileInputStream fis = null;
+        Workbook workbook = null;
         try {
             // TODO 可以研究下POIFSFileSystem 底层用的NIO中的FileChannel
             // TODO 关于加解密可以参考这个https://poi.apache.org/encryption.html
-            // HSSFWorkbook只支持xls文件格式
+            // HSSFWorkbook只支持OLE2(xls)文件格式
             // 初始化Workbook(工作簿)
             // 方式一
             // 注意:设置解密密码一定要在创建Workbook之前执行,Biff8EncryptionKey这个类是线程安全的
             Biff8EncryptionKey.setCurrentUserPassword("123456");
             File file = new File("D://1.xls");
-//            HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(file));
+            fis = new FileInputStream(file);
+//            workbook = new HSSFWorkbook(fis);
             // 方式二
             POIFSFileSystem fs = new POIFSFileSystem(file);
-//            HSSFWorkbook workbook = new HSSFWorkbook(fs);
+//            workbook = new HSSFWorkbook(fs);
             // 方式三
             DirectoryNode rootNode = fs.getRoot();
-//            HSSFWorkbook workbook = new HSSFWorkbook(rootNode, true);
+//            workbook = new HSSFWorkbook(rootNode, true);
             // 方式四:通过HSSFWorkbookFactory工厂类进行创建，HSSFWorkbookFactory继承自WorkbookFactory
-
-            HSSFWorkbook workbook = HSSFWorkbookFactory.createWorkbook(rootNode);
+            workbook = HSSFWorkbookFactory.createWorkbook(rootNode);
             // 方式五:通过WorkbookFactory工厂类进行创建,WorkbookFactory会自己根据文件判断创建是HSSFWorkbook还是XSSFWorkbook
-            // 带密码Excel表格
-//            Workbook workbook = WorkbookFactory.create(file, "123456");
+            // 也可以通过WorkbookFactory的方法直接解密(推荐用这种方式创建，不需要自行判断是xls还是xlsx)
+//            workbook = WorkbookFactory.create(file, "123456");
             // 一个Workbook可以有多个sheet
             // 根据索引获取sheet(索引从0开始)
 //            Sheet sheet = workbook.getSheetAt(0);
@@ -69,7 +71,6 @@ public class HSSFDemo {
             System.out.printf("总物理行数<= 最后一行行号(最后一行索引 + 1):%d\n",totalRows);
             // 通过索引获取某一行数据
 //            Row row = sheet.getRow(0);
-
             // 建议通过以下方式获取所有行（经测试不会返回没有任何内容的行）
 //            Iterator<Row> rowIterator = sheet.iterator();
             Iterator<Row> rowIterator = sheet.rowIterator();
@@ -119,6 +120,17 @@ public class HSSFDemo {
             }
         } catch (Exception e){
             e.printStackTrace();
+        } finally {
+            try {
+                if(fis != null){
+                    fis.close();
+                }
+                if(workbook != null){
+                    workbook.close();
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
