@@ -11,4 +11,10 @@ public class XSSFDemoTest {
         XSSFDemo demo = new XSSFDemo();
         demo.readDemo();
     }
+
+    @Test
+    public void readLargeDemo(){
+        XSSFDemo demo = new XSSFDemo();
+        demo.readLargeExcel();
+    }
 }

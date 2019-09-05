@@ -13,7 +13,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Iterator;
 
@@ -33,6 +32,7 @@ public class XSSFDemo {
         Workbook workbook = null;
         try {
             // XSSFWorkbook支持OOXML(XLSX和XLSM)文件格式，XLSM为启用宏的OOXML格式
+            // xlsx最多1048576行，最多16384列
             // 初始化Workbook(工作簿)
             // 方式一
             File file = new File("D://24.xlsx");
@@ -132,6 +132,37 @@ public class XSSFDemo {
                     workbook.close();
                 }
             } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 测试读取大Excel文件
+     */
+    public void readLargeExcel(){
+        // 读取文件时就直接内存溢出
+        // Caused by: java.lang.OutOfMemoryError: GC overhead limit exceeded
+        Workbook workbook = null;
+        try{
+            workbook = WorkbookFactory.create(new File("D://2007.xlsx"));
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = sheet.rowIterator();
+            while (rowIterator.hasNext()){
+                Row row = rowIterator.next();
+//                Iterator<Cell> cellIterator = row.cellIterator();
+//                while (cellIterator.hasNext()){
+//                    Cell cell = cellIterator.next();
+//                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                if(workbook != null){
+                    workbook.close();
+                }
+            }catch (Exception e){
                 e.printStackTrace();
             }
         }

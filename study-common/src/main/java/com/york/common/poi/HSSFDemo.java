@@ -1,9 +1,7 @@
 package com.york.common.poi;
 
 import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
+import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.poifs.crypt.EncryptionInfo;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
@@ -14,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
 
@@ -36,6 +35,7 @@ public class HSSFDemo {
             // TODO 可以研究下POIFSFileSystem 底层用的NIO中的FileChannel
             // TODO 关于加解密可以参考这个https://poi.apache.org/encryption.html
             // HSSFWorkbook只支持OLE2(xls)文件格式
+            // xls一个sheet最多65536行
             // 初始化Workbook(工作簿)
             // 方式一
             // 注意:设置解密密码一定要在创建Workbook之前执行,Biff8EncryptionKey这个类是线程安全的
@@ -112,7 +112,7 @@ public class HSSFDemo {
                             System.out.println(cell.getCellFormula());
                             break;
                         case BLANK:
-                            System.out.println("空");
+                            System.out.println(cell.getRichStringCellValue().getString());
                         default:
                             break;
                     }
@@ -134,8 +134,19 @@ public class HSSFDemo {
         }
     }
 
-    public void writeExcel(){
-
+    public void writeDemo(){
+        try (HSSFWorkbook workbook = new HSSFWorkbook();){
+            HSSFSheet sheet = workbook.createSheet("学生");
+            HSSFRow titleRow = sheet.createRow(0);
+            HSSFCell cell = titleRow.createCell(0);
+            cell.setCellValue("姓名");
+            HSSFCell cell1 = titleRow.createCell(1);
+            cell1.setCellValue("年龄");
+            HSSFSheet sheet1 = workbook.createSheet("老师");
+            workbook.write(new File("D://blank.xls"));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

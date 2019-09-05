@@ -17,11 +17,13 @@ public class HSSFDemoTest {
 
     @Test
     public void hssfReadDemo() {
-        HSSFDemo HSSFDemo = new HSSFDemo();
-        HSSFDemo.readDemo();
+        HSSFDemo hssfDemo = new HSSFDemo();
+        hssfDemo.readDemo();
     }
 
     @Test
     public void writeExcel() {
+        HSSFDemo hssfDemo = new HSSFDemo();
+        hssfDemo.writeDemo();
     }
 }

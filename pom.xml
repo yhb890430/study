@@ -16,6 +16,7 @@
         <module>StudyMybatis</module>
         <module>StudyNetty</module>
         <module>StudyWebService</module>
+        <module>StudySpring</module>
     </modules>
 
     <!--阿里云镜像-->
