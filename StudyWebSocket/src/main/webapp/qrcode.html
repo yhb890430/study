@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.qrcode.min.js"></script>
+</head>
+<body>
+<div id="qrcode"></div>
+    <canvas id="imgCanvas" width="250" height="310"></canvas>
+</body>
+<script type="text/javascript">
+    function generateQRCode(rendermethod, picwidth, picheight, text) {
+        $("#qrcode").empty().qrcode({
+            render: rendermethod, // 渲染方式有table方式（IE兼容）和canvas方式，默认使用canvas方式
+            width: picwidth, //二维qrcode码宽度
+            height:picheight, //二维码高度
+            // text:toUtf8(text), //设置二维码文本的内容
+            text:text, //设置二维码文本的内容
+            /*typeNumber:-1,//计算模式
+            correctLevel:2,//二维码纠错级别
+            background: "#ffffff",//背景颜色
+            foreground: "#000000"  //二维码颜色*/
+        });
+    }
+
+    function toUtf8(str) {
+        var out, i, len, c;
+        out = "";
+        len = str.length;
+        for(i = 0; i < len; i++) {
+            c = str.charCodeAt(i);
+            if ((c >= 0x0001) && (c <= 0x007F)) {
+                out += str.charAt(i);
+            } else if (c > 0x07FF) {
+                out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                out += String.fromCharCode(0x80 | ((c >>  6) & 0x3F));
+                out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F));
+            } else {
+                out += String.fromCharCode(0xC0 | ((c >>  6) & 0x1F));
+                out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F));
+            }
+        }
+        return out;
+    }
+    function generateQRCode2(item){
+        var str={
+            id:item.id,
+            structureCode: "PJ-138",
+            sensorcode:item.sensorcode,
+            description:toUtf8('请在“江苏中桥”微信公众号里面进行扫码'),
+        }
+        generateQRCode("canvas",250, 250, JSON.stringify(str));
+    }
+
+    function getTrueLength(str){//获取字符串的真实长度（字节长度）
+        var len = str.length, truelen = 0;
+        for(var x = 0; x < len; x++){
+            if(str.charCodeAt(x) > 128){
+                truelen += 2;
+            }else{
+                truelen += 1;
+            }
+        }
+        console.log('truelen...', truelen)
+        return truelen;
+    }
+    function cutString(str, leng){//按字节长度截取字符串，返回substr截取位置
+        var len = str.length, tlen = len, nlen = 0;
+        for(var x = 0; x < len; x++){
+            if(str.charCodeAt(x) > 128){
+                console.log('汉字')
+                if(nlen + 2 < leng){
+                    nlen += 2;
+                }else{
+                    tlen = x;
+                    break;
+                }
+            }else{
+                console.log('字符')
+                if(nlen + 1 < leng){
+                    nlen += 1;
+                }else{
+                    tlen = x;
+                    break;
+                }
+            }
+        }
+        return tlen;
+    }
+
+    function downLoadQRCode(item){
+        generateQRCode2(item);
+        //获取画布
+        var text = item.eqpName + " " + item.sensorPosition;
+        var canvas = $("#qrcode>canvas").get(0);
+        var oldCtx = canvas.getContext('2d');
+        var imgCanvas = document.getElementById('imgCanvas');
+        var ctx = imgCanvas.getContext('2d');
+        // var textPx = window.devicePixelRatio;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0,0,imgCanvas.width,imgCanvas.height);
+        ctx.putImageData(oldCtx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
+        ctx.fillStyle = 'black';
+        // ctx.strokStyle = 'rgb(1,1,0)';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+        // ctx.font = 12 * textPx + "px" + " Microsoft YaHei";
+        ctx.font = "25px Microsoft YaHei";
+        // console.log(text, ctx.measureText(text).width)
+        // for(var i = 1; getTrueLength(text) > 0; i++){//分行
+        //     var tl = cutString(text, 130);
+        //     ctx.fillText(text.substr(0, tl).replace(/^\s+|\s+$/, ""), imgCanvas.width / 2, imgCanvas.height - 10);
+        //     text = text.substr(tl);
+        // }
+        ctx.fillText("CS"+item.eqpName, imgCanvas.width / 2, imgCanvas.height - 45);
+        ctx.fillText(item.sensorPosition, imgCanvas.width / 2, imgCanvas.height - 15);
+
+        // ctx.strokeText(text, imgCanvas.width / 2, imgCanvas.height - 20);
+        imgCanvas.style.display = 'none';
+
+        var url = imgCanvas.toDataURL('image/png');
+        var a = document.createElement('a');
+        document.body.appendChild(a);
+        a.href = url;
+        a.download = text +'.png';//执行下载
+        a.click();
+    }
+    var fc;
+
+    function parserJson(){
+        $.ajax({
+            url: "json/pj-138.json",//json文件位置
+            type: "GET",//请求方式为get
+            dataType: "json", //返回数据格式为json
+            success: function(data) {
+                var arr = data.data;
+                var i = 0;
+                var fc = setInterval(function () {
+                    if(i >= arr.length){
+                        clearInterval(fc);
+                    }
+                    if(i < arr.length){
+                        downLoadQRCode(arr[i]);
+                        i++;
+                    }
+                },1000);
+            }
+        });
+    }
+    parserJson();
+</script>
+</html>

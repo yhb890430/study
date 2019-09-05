@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./threejs/build/three.js"></script>
+    <script src="./threejs/examples/js/libs/stats.min.js"></script>
+    <script src="./threejs/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="./threejs/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="./threejs/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+<div id="container"></div>
+</body>
+<script type="text/javascript">
+
+    var camera, scene, renderer,stats;
+
+    var container = document.querySelector( '#container' );
+
+    init();
+
+    animate();
+
+    function init() {
+        // 场景
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color( 0xFFFFFF);
+
+        // 相机
+        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
+        // camera.lookAt(new THREE.Vector3(0, 0, 0));
+        scene.add(camera);
+
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.physicallyCorrectLights = true;
+        renderer.gammaOutput = true;
+        renderer.gammaFactor = 2.2;
+        renderer.setClearColor( 0xcccccc );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        let controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = -10;
+        controls.screenSpacePanning = true;
+        // controls.target.set(new THREE.Vector3(0,0,0));
+        controls.update();
+        container.appendChild(renderer.domElement);
+        
+        let loader = new THREE.GLTFLoader();
+        THREE.DRACOLoader.setDecoderPath( './threejs/examples/js/libs/draco/' );
+        loader.setDRACOLoader( new THREE.DRACOLoader());
+
+        loader.load(
+            './111.gltf',
+            function (gltf) {
+                var object = gltf.scene||gltf.scene[0]
+                // 通过场景创建相应大小的3D立方体
+                const box = new THREE.Box3().setFromObject(object);
+                // 获取立方体的宽度、高度和深度
+                const size = box.getSize(new THREE.Vector3()).length();
+                // 获取立方体的中心点
+                const center = box.getCenter(new THREE.Vector3());
+                console.log(size);
+                // console.log(center);
+
+                object.position.x += (object.position.x - center.x);
+                object.position.y += (object.position.y - center.y);
+                object.position.z += (object.position.z - center.z);
+                // controls.maxDistance = size * 10;
+                // 允许根据立方体大小放大和缩小一百倍
+                camera.near = size / 100;
+                camera.far = size * 100;
+                // camera.updateProjectionMatrix();
+                console.log(object);
+
+
+                camera.position.copy(center);
+                // camera.up.copy(new THREE.Vector3(0,1,0));
+                // camera.scale.copy(new THREE.Vector3(1,1,1));
+                // camera.rotation.copy(new THREE.Euler( -1, 0, 0, 'XYZ' ));
+                camera.position.x += size/5;
+                camera.position.y += size/5;
+                camera.position.z += size/5;
+                camera.updateProjectionMatrix();
+                scene.add(object);
+            }
+        );
+
+        
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        stats = new Stats();
+        container.appendChild( stats.dom );
+
+        this.animate = this.animate.bind(this);
+        requestAnimationFrame( this.animate );
+
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        // scene.rotation.x += 0.1;
+        // scene.rotation.y += 0.1;
+        // this.stats.update();
+        renderer.render(scene,camera);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+    }
+</script>
+</html>
