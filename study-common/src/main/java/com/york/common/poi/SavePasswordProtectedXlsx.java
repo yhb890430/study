@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 
 /**
  * @description:
@@ -27,34 +28,42 @@ import java.security.GeneralSecurityException;
 public class SavePasswordProtectedXlsx {
 
     public static void main(String[] args) throws Exception {
-        TempFileUtils.checkTempFiles();
-        String filename = "D://123.xlsx";
-        String password = "123";
-        SXSSFWorkbookWithCustomZipEntrySource wb = new SXSSFWorkbookWithCustomZipEntrySource();
-        try {
-            for(int i = 0; i < 10; i++) {
-                SXSSFSheet sheet = wb.createSheet("Sheet" + i);
-                for(int r = 0; r < 1000; r++) {
-                    SXSSFRow row = sheet.createRow(r);
-                    for(int c = 0; c < 100; c++) {
-                        SXSSFCell cell = row.createCell(c);
-                        cell.setCellValue("abcd");
-                    }
-                }
-            }
-            EncryptedTempData tempData = new EncryptedTempData();
-            try {
-                wb.write(tempData.getOutputStream());
-                save(tempData.getInputStream(), filename, password);
-                System.out.println("Saved " + filename);
-            } finally {
-                tempData.dispose();
-            }
-        } finally {
-            wb.close();
-            wb.dispose();
-        }
-        TempFileUtils.checkTempFiles();
+//        TempFileUtils.checkTempFiles();
+//        String filename = "D://123.xlsx";
+//        String password = "123";
+//        SXSSFWorkbookWithCustomZipEntrySource wb = new SXSSFWorkbookWithCustomZipEntrySource();
+//        try {
+//            for(int i = 0; i < 10; i++) {
+//                SXSSFSheet sheet = wb.createSheet("Sheet" + i);
+//                for(int r = 0; r < 1000; r++) {
+//                    SXSSFRow row = sheet.createRow(r);
+//                    for(int c = 0; c < 100; c++) {
+//                        SXSSFCell cell = row.createCell(c);
+//                        cell.setCellValue("abcd");
+//                    }
+//                }
+//            }
+//            EncryptedTempData tempData = new EncryptedTempData();
+//            try {
+//                wb.write(tempData.getOutputStream());
+//                save(tempData.getInputStream(), filename, password);
+//                System.out.println("Saved " + filename);
+//            } finally {
+//                tempData.dispose();
+//            }
+//        } finally {
+//            wb.close();
+//            wb.dispose();
+//        }
+//        TempFileUtils.checkTempFiles();
+
+        SecureRandom sr = new SecureRandom();
+        byte[] ivBytes = new byte[16];
+        byte[] keyBytes = new byte[16];
+        sr.nextBytes(ivBytes);
+        sr.nextBytes(keyBytes);
+        System.out.println(ivBytes);
+        System.out.println(keyBytes);
     }
 
     public static void save(final InputStream inputStream, final String filename, final String pwd)

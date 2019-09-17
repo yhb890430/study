@@ -141,37 +141,8 @@ public class HSSFDemo {
             HSSFCell cell1 = titleRow.createCell(1);
             cell1.setCellValue("年龄");
             HSSFSheet sheet1 = workbook.createSheet("老师");
+
             workbook.write(new File("D://blank.xls"));
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) {
-        try (Workbook wb = new XSSFWorkbook()) {   //or new HSSFWorkbook();
-            Sheet sheet = wb.createSheet("Sheet1");
-
-            Row row1 = sheet.createRow(1);
-            row1.createCell(0).setCellValue(1);
-
-//            Row row2 = sheet.createRow(4);
-//            row2.createCell(1).setCellValue(2);
-//
-//            Row row3 = sheet.createRow(5);
-//            row3.createCell(2).setCellValue(3);
-//
-//            Row row4 = sheet.createRow(6);
-//            row4.createCell(3).setCellValue(4);
-//
-//            Row row5 = sheet.createRow(9);
-//            row5.createCell(4).setCellValue(5);
-
-            // Shift rows 6 - 11 on the spreadsheet to the top (rows 0 - 5)
-            sheet.shiftRows(0, 4, 10);
-
-            try (FileOutputStream fileOut = new FileOutputStream("D://shiftRows.xlsx")) {
-                wb.write(fileOut);
-            }
         }catch (Exception e){
             e.printStackTrace();
         }
