@@ -29,6 +29,7 @@ public class POIIntroduction {
 //    XWPF(XML字处理器格式)          用于读取和写入MS-Word的扩展文件.docx 。                           poi-ooxml
 //    XSLF                           用于阅读，创建和编辑.pptx。                                       poi-ooxml
 //    XDGF                           用于操作MS-Visio二进制文件。                                      poi-ooxml
+//    SXSSF                          用于导出大的excel文件
 
 
 

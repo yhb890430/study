@@ -1,19 +1,17 @@
 package com.york.common.poi;
 
+import com.york.common.poi.util.TempFileUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.poifs.crypt.Decryptor;
-import org.apache.poi.poifs.crypt.EncryptionInfo;
+import org.apache.poi.openxml4j.opc.PackageAccess;
+import org.apache.poi.poifs.crypt.*;
+import org.apache.poi.poifs.crypt.temp.EncryptedTempData;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
+import org.apache.poi.util.TempFile;
+import org.apache.poi.xssf.usermodel.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Iterator;
 
 /**
@@ -24,6 +22,9 @@ import java.util.Iterator;
  */
 public class XSSFDemo {
     // 官方示例代码：https://svn.apache.org/repos/asf/poi/trunk/src/examples/src/org/apache/poi/
+    // 关于加解密请参考官方文档:https://poi.apache.org/encryption.html
+    // 关于OPC概念  https://www.cnblogs.com/icmzn/p/6025129.html
+
     /**
      * XSSF组件读excel文件示例
      */
@@ -37,7 +38,7 @@ public class XSSFDemo {
             // 方式一
             File file = new File("D://24.xlsx");
             is = new FileInputStream(file);
-            // 解密带密码XLSX文件，不解密会报错
+            // 解密带密码XLSX文件，不解密会报错(后续可以做成工具类)
 //            POIFSFileSystem fs = new POIFSFileSystem(is);
 //            EncryptionInfo info = new EncryptionInfo(fs);
 //            Decryptor d = Decryptor.getInstance(info);
@@ -138,7 +139,94 @@ public class XSSFDemo {
     }
 
     /**
-     * 测试读取大Excel文件
+     * 导出示例
+     * 样式、合并单元格、绘制图表等参考官方示例
+     */
+    public void exportDemo(){
+        XSSFWorkbook workbook = null;
+        try {
+            TempFileUtils.checkTempFiles();
+            workbook = XSSFWorkbookFactory.createWorkbook();
+            XSSFSheet sheet = workbook.createSheet("student");
+            XSSFRow titleRow = sheet.createRow(0);
+            titleRow.createCell(0).setCellValue("name");
+            titleRow.createCell(1).setCellValue("sex");
+            titleRow.createCell(2).setCellValue("age");
+            titleRow.createCell(3).setCellValue("province");
+            // 不加密导出
+//            try(FileOutputStream fos = new FileOutputStream("D://123.xlsx");){
+//                workbook.write(fos);
+//            }
+            // 加密导出
+
+            // 方案一:失败
+//            EncryptedTempData tempData = new EncryptedTempData();
+//            workbook.write(tempData.getOutputStream());
+//            try (POIFSFileSystem fs = new POIFSFileSystem();
+//                 OPCPackage opc = OPCPackage.open(tempData.getInputStream());
+//                 FileOutputStream fos = new FileOutputStream("D://123.xlsx")) {
+//                EncryptionInfo info = new EncryptionInfo(EncryptionMode.agile);
+//                Encryptor enc = Encryptor.getInstance(info);
+//                enc.confirmPassword("123");
+//                opc.save(enc.getDataStream(fs));
+//                fs.writeFilesystem(fos);
+//            }
+//            tempData.dispose();
+
+            // 方案二:失败，可以加密，但文件损坏打不开
+//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//            workbook.write(bos);
+//            bos.flush();
+//            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+//            POIFSFileSystem pfs = new POIFSFileSystem();
+//            EncryptionInfo info = new EncryptionInfo(EncryptionMode.standard);
+//            Encryptor enc = Encryptor.getInstance(info);
+//            enc.confirmPassword("123");
+//            OPCPackage opc = OPCPackage.open(bis);
+//            OutputStream os = enc.getDataStream(pfs);
+//            opc.save(os);
+//            opc.close();
+//            FileOutputStream fos = new FileOutputStream("D://123.xlsx");
+//            pfs.writeFilesystem(fos);
+//            fos.close();
+
+            // 方案三:先导出未加密文件，然后再读取重新加密
+            // 该方案只适合小文件导出，否则太耗内存
+            try (FileOutputStream fos = new FileOutputStream("D://123.xlsx");
+                    POIFSFileSystem fs = new POIFSFileSystem();) {
+                workbook.write(fos);
+                // 采用标准加密方式
+                EncryptionInfo info = new EncryptionInfo(EncryptionMode.standard);
+                Encryptor enc = info.getEncryptor();
+                // 设置加密密码
+                enc.confirmPassword("123");
+                // 读取刚导出的未加密文件
+                try (OPCPackage opc = OPCPackage.open(new File("D://123.xlsx"), PackageAccess.READ_WRITE);
+                    OutputStream os = enc.getDataStream(fs);) {
+                    opc.save(os);
+                }
+                // 重新导出加密后文件
+                try (FileOutputStream fos2 = new FileOutputStream("D://123.xlsx")) {
+                    fs.writeFilesystem(fos2);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            try {
+                if(workbook != null){
+                    workbook.close();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    /**
+     * 测试读取大Excel文件,JVM内存溢出
+     * 该excel文件20万行
      */
     public void readLargeExcel(){
         // 读取文件时就直接内存溢出
@@ -167,5 +255,4 @@ public class XSSFDemo {
             }
         }
     }
-
 }
