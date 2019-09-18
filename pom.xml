@@ -38,8 +38,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <log4j2.version>2.11.1</log4j2.version>
+        <log4j2.version>2.12.1</log4j2.version>
         <quartz.version>2.3.0</quartz.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <!-- dependencyManagement主要用于jar包版本管理，但不会实际引入jar包-->
@@ -65,6 +66,12 @@
                 <version>${quartz.version}</version>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -88,6 +95,10 @@
             <version>8.5.42</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
