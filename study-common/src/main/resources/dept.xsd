@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://yhb.com/schema/dept" targetNamespace="http://yhb.com/schema/dept" elementFormDefault="qualified" attributeFormDefault="qualified">
+    <!--<xs:element name="dept" type="deptType"></xs:element>-->
+    <xs:complexType name="deptType">
+        <xs:sequence>
+            <xs:sequence>
+                <xs:element name="deptId" type="xs:integer" ></xs:element>
+            </xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

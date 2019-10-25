@@ -1,7 +1,8 @@
 package com.york;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author York.yuan
@@ -11,10 +12,17 @@ import org.apache.logging.log4j.Logger;
  **/
 public class LogTest {
 
-    private static final Logger LOGGER = LogManager.getLogger(LogTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogTest.class);
 
     public static void main(String[] args) {
         //Log4j2架构 http://logging.apache.org/log4j/2.x/manual/architecture.html
         //UML图类图 http://www.uml.org.cn/oobject/201610282.asp
+        try{
+            int a = 1/0;
+        }catch (Exception e){
+            LOGGER.info("111");
+            LOGGER.error("LogTest/main",e);
+            LOGGER.error("LogTest/main"+e);
+        }
     }
 }

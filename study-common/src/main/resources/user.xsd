@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- XML Schema Definition XML命名空间定义文件，简称XSD,专门用于规定XML文档的所拥有的的元素，元素出现的顺序和次数等，对于之前的DTD文件有很大的优势-->
+<!--schema 是根标签 -->
+<!--xmlns:xsd="http://www.w3.org/2001/XMLSchema",指定该文档中的所有元素和数据类型来自http://www.w3.org/2001/XMLSchema，并指定了元素和数据类型的前缀是xsd-->
+<!--xmlns="http://yhb.com/schema/user",指定该文档的默认命名空间URI-->
+<!--targetNamespace="http://yhb.com/schema/user",指定引用该命名空间时的URI-->
+<!--elementFormDefault 使用该命名空间定义的元素时，如果指定了前缀， qualified 那么需要带上前缀使用 unqualified,不需要带上前缀-->
+<!--attributeFormDefault 使用该命名空间定义的属性时，如果指定了前缀， qualified 那么需要带上前缀使用 unqualified,不需要带上前缀-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://yhb.com/schema/user" targetNamespace="http://yhb.com/schema/user" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <!--用于向一个文档添加带有不同目标命名空间的多个schem,就是targetNamespace相同-->
+    <xsd:import namespace="http://yhb.com/schema/dept" schemaLocation="dept.xsd"></xsd:import>
+    <!--向一个文档添加带有相同目标命名空间的多个schema-->
+    <xsd:include schemaLocation="company.xsd"></xsd:include>
+    <!--annotation 用于添加描述信息,类似于注释 -->
+    <xsd:annotation>
+        <xsd:appinfo>这是我的用户App</xsd:appinfo>
+        <xsd:documentation>这个命名空间主要定义了一个用户的复杂类型</xsd:documentation>
+    </xsd:annotation>
+    <!-- element 用于定义一个元素，也就是XML标签，这个元素可以是简单元素和复合元素 -->
+    <!-- 简单元素，指包含文本内容的元素，不包含其他子元素或者属性 -->
+    <!-- 复合元素，指包含其他子元素或者属性的元素 -->
+    <xsd:attribute name="name3" type="xsd:string"></xsd:attribute>
+    <!-- 这个XML文档的根标签，一个XML文档有且仅能有一个根标签 -->
+    <xsd:element name="user">
+        <xsd:annotation>
+            <xsd:documentation>用户标签定义，用户是一个复杂类型元素，拥有子标签和元素</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType >
+            <xsd:sequence id="name">
+                <!--简单元素-->
+                <xsd:element name="id" type="xsd:integer"></xsd:element>
+                <xsd:element name="name" type="xsd:string"></xsd:element>
+                <xsd:element name="age" type="xsd:short"></xsd:element>
+                <xsd:element name="sex" type="xsd:string"></xsd:element>
+                <!-- 引用其他文档定义的复杂类型 -->
+                <xsd:element name="company" type="companyType"></xsd:element>
+            </xsd:sequence>
+            <!-- 标签的属性 -->
+            <!-- attribute标签拥有的所有属性，其中default和fixed不能共存,当ref存在时，name不起任何作用 -->
+            <!--<xsd:attribute id="" name="" type="" ref="" use=""  form="" default="" fixed=""></xsd:attribute>-->
+            <xsd:attribute name="id" type="xsd:integer"></xsd:attribute>
+            <!-- use用于指定该属性是否必须，有三个值optional(可选) required(必须)  prohibited(禁用)-->
+            <xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+            <!-- 属性可以有默认值或者固定值，但两者不能同时存在 即default和fixed不能同时存在-->
+            <!-- 带有默认值的属性 default用于指定默认值-->
+            <xsd:attribute name="name1" type="xsd:integer" default="0" use="prohibited"></xsd:attribute>
+            <!-- 属性值为固定值 fixed用于指定固定值-->
+            <xsd:attribute name="name2" type="xsd:integer" fixed="2" use="optional"></xsd:attribute>
+            <!-- 使用ref引用已经定义好的属性 -->
+            <xsd:attribute ref="name3"></xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

@@ -63,7 +63,7 @@ public class Test {
     }
 
     public static void main(String[] args) {
-//        Test.test("你好Abcd",10);
+//        SqlInjection.test("你好Abcd",10);
 //        try {
 //            String s = "你好Abcd";
 //            System.out.println(s.getBytes().length);

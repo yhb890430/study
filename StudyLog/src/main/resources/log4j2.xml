@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
+<Configuration status="INFO" monitorInterval="60" name="SMEPlatformLog">
+    <Properties>
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{50} - %msg%n</Property>
+        <Property name="filePattern">logs/sme-%d{yyyy-MM-dd}-%i.log</Property>
+        <Property name="FILE_NAME">logs/sme.log</Property>
+    </Properties>
     <Appenders>
-
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN}"/>
+        </Console>
+        <RollingRandomAccessFile name="INFO" fileName="${FILE_NAME}" filePattern="${FILE_NAME}_%d{yyyy-MM-dd}_%i.log.gz">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="200MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingRandomAccessFile>
     </Appenders>
     <Loggers>
-        <Logger name="" ></Logger>
-        <Root>
-            <AppenderRef ref=""></AppenderRef>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="INFO"/>
         </Root>
     </Loggers>
 </Configuration>

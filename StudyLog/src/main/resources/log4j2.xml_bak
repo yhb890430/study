@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config" packages="" name="" age="0">
+    <CustomLevels>
+        <CustomLevel name="OFF" intLevel="0"></CustomLevel>
+        <CustomLevel name="FATAL" intLevel="100"></CustomLevel>
+        <CustomLevel name="ERROR" intLevel="200"></CustomLevel>
+    </CustomLevels>
+    <!--<CustomLevel name="" intLevel=""></CustomLevel>-->
+    <Properties>
+        <Property name=""></Property>
+    </Properties>
+    <Filters>
+        <Filter type=""></Filter>
+    </Filters>
+    <!--<Filter type=""></Filter>-->
+    <ThresholdFilter level="" onMatch="" onMismatch=""></ThresholdFilter>
+    <Appenders>
+        <Appender type="" name="">
+            <Layout type=""></Layout>
+            <Filters>
+                <Filter type=""></Filter>
+                <Filter type=""></Filter>
+            </Filters>
+        </Appender>
+        <Appender type="" name=""></Appender>
+        <Console name="" target="">
+            <PatternLayout pattern=""></PatternLayout>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="" level="" additivity="">
+            <AppenderRef ref=""></AppenderRef>
+        </Logger>
+        <Logger name="" level="" additivity="">
+            <Filters>
+                <Filter type=""></Filter>
+            </Filters>
+            <!--<Filter type=""></Filter>-->
+            <AppenderRef ref=""></AppenderRef>
+        </Logger>
+        <Root level="">
+            <AppenderRef ref=""></AppenderRef>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<us:user xmlns:us="http://yhb.com/schema/user" name="4"  name2="2" id="1">
+    <us:id>1</us:id>
+    <us:name>tom</us:name>
+    <us:age>20</us:age>
+    <us:sex>male</us:sex>
+    <us:company>
+        <id>1</id>
+        <companyName>上海建科院</companyName>
+    </us:company>
+</us:user>
