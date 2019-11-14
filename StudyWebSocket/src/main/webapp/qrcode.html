@@ -47,7 +47,7 @@
     function generateQRCode2(item){
         var str={
             id:item.id,
-            structureCode: "PJ-138",
+            structureCode: item.structureCode,
             sensorcode:item.sensorcode,
             description:toUtf8('请在“江苏中桥”微信公众号里面进行扫码'),
         }
@@ -92,8 +92,21 @@
 
     function downLoadQRCode(item){
         generateQRCode2(item);
+        let eqpName = item.eqpName.replace(item.sensorPosition,"");
         //获取画布
-        var text = item.eqpName + " " + item.sensorPosition;
+        var text = eqpName + " " + item.sensorPosition;
+        var bottomStr = item.eqpName;
+        let str1,str2;
+        if(bottomStr.length > 20){
+            var ms = item.eqpName.length % 2;
+            var pos = (item.eqpName.length-ms)/2;
+            str1 = bottomStr.substring(0,pos);
+            str2 = bottomStr.substring(pos,item.eqpName.length);
+        }else{
+            str1 = eqpName;
+            str2 = item.sensorPosition;
+        }
+
         var canvas = $("#qrcode>canvas").get(0);
         var oldCtx = canvas.getContext('2d');
         var imgCanvas = document.getElementById('imgCanvas');
@@ -108,15 +121,8 @@
         ctx.textAlign = 'center';
         // ctx.font = 12 * textPx + "px" + " Microsoft YaHei";
         ctx.font = "25px Microsoft YaHei";
-        // console.log(text, ctx.measureText(text).width)
-        // for(var i = 1; getTrueLength(text) > 0; i++){//分行
-        //     var tl = cutString(text, 130);
-        //     ctx.fillText(text.substr(0, tl).replace(/^\s+|\s+$/, ""), imgCanvas.width / 2, imgCanvas.height - 10);
-        //     text = text.substr(tl);
-        // }
-        ctx.fillText("CS"+item.eqpName, imgCanvas.width / 2, imgCanvas.height - 45);
-        ctx.fillText(item.sensorPosition, imgCanvas.width / 2, imgCanvas.height - 15);
-
+        ctx.fillText(str1, imgCanvas.width / 2, imgCanvas.height - 45);
+        ctx.fillText(str2, imgCanvas.width / 2, imgCanvas.height - 15);
         // ctx.strokeText(text, imgCanvas.width / 2, imgCanvas.height - 20);
         imgCanvas.style.display = 'none';
 
@@ -131,7 +137,7 @@
 
     function parserJson(){
         $.ajax({
-            url: "json/pj-138.json",//json文件位置
+            url: "json/data.json",//json文件位置
             type: "GET",//请求方式为get
             dataType: "json", //返回数据格式为json
             success: function(data) {
