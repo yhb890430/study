@@ -69,7 +69,7 @@
         loader.setDRACOLoader( new THREE.DRACOLoader());
 
         loader.load(
-            './model/ycxdl.gltf',
+            './models/ycxdl.gltf',
             function (gltf) {
                 var object = gltf.scene||gltf.scene[0];
                 // 通过场景创建相应大小的3D立方体
@@ -97,14 +97,9 @@
                 scene.add(object);
             }
         );
-
-        
-
         window.addEventListener( 'resize', onWindowResize, false );
-
         this.animate = this.animate.bind(this);
         requestAnimationFrame( this.animate );
-
     }
 
     function animate() {
