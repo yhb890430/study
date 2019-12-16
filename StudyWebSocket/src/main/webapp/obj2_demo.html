@@ -9,6 +9,7 @@
     <script src="./threejs/examples/js/loaders/OBJLoader.js"></script>
 </head>
 <body>
+<div id="example"></div>
 </body>
 <script type="module">
 
@@ -16,12 +17,13 @@
     import { OrbitControls } from "./threejs/examples/jsm/controls/OrbitControls.js";
     import { MTLLoader } from "./threejs/examples/jsm/loaders/MTLLoader.js";
     import { OBJLoader2 } from "./threejs/examples/jsm/loaders/OBJLoader2.js";
+    import { OBJLoader } from "./threejs/examples/jsm/loaders/OBJLoader.js";
 
 
     const OBJLoader2Example = function ( elementToBindTo ) {
         this.renderer = null;
-        this.canvas = elementToBindTo;
-        this.aspectRatio = 1;
+        this.container = elementToBindTo;
+        this.aspectRatio = window.innerWidth/window.innerHeight;
         this.recalcAspectRatio();
 
         this.scene = null;
@@ -44,18 +46,26 @@
 
         initGL: function () {
             this.renderer = new THREE.WebGLRenderer( {
-                canvas: this.canvas,
                 antialias: true,
                 autoClear: true
             } );
             this.renderer.setClearColor( 0x050505 );
-
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
             this.scene = new THREE.Scene();
+            this.scene.background = new THREE.Color(0xffffff);
 
             this.camera = new THREE.PerspectiveCamera( this.cameraDefaults.fov, this.aspectRatio, this.cameraDefaults.near, this.cameraDefaults.far );
             this.resetCamera();
             this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-
+            this.controls.maxAzimuthAngle = Math.PI * 0.3;
+            this.controls.maxPolarAngle = Math.PI * 0.3;
+            // this.controls.autoRotate = true;
+            // 是否允许摄像机旋转
+            this.controls.enableRotate = true;
+            // 是否允许摄像机变焦(缩小和放大)
+            this.controls.enableZoom = true;
+            // 是否允许摄像机平移
+            this.controls.update();
             let ambientLight = new THREE.AmbientLight( 0x404040 );
             let directionalLight1 = new THREE.DirectionalLight( 0xC0C090 );
             let directionalLight2 = new THREE.DirectionalLight( 0xC0C090 );
@@ -63,10 +73,10 @@
             directionalLight1.position.set( - 100, - 50, 100 );
             directionalLight2.position.set( 100, 50, - 100 );
 
-            this.scene.add( directionalLight1 );
-            this.scene.add( directionalLight2 );
-            this.scene.add( ambientLight );
-
+            // this.scene.add( directionalLight1 );
+            // this.scene.add( directionalLight2 );
+            // this.scene.add( ambientLight );
+            this.container.appendChild(this.renderer.domElement);
             // let helper = new THREE.GridHelper( 1200, 60, 0xFF4444, 0x404040 );
             // this.scene.add( helper );
         },
@@ -77,8 +87,30 @@
             let scope = this;
             let objLoader2 = new OBJLoader2();
             let callbackOnLoad = function ( object3d ) {
-                scope.scene.add( object3d );
-                console.log( 'Loading complete: ' + modelName );
+                const scene = object3d;
+                // 通过场景创建相应大小的3D立方体
+                const box = new THREE.Box3().setFromObject(scene);
+                // 获取立方体的宽度、高度和深度
+                const v3 = box.getSize();
+                const size = box.getSize(new THREE.Vector3()).length();
+                // 获取立方体的中心点
+                const center = box.getCenter(new THREE.Vector3());
+                scene.position.x += (scene.position.x - center.x);
+                scene.position.y += (scene.position.y - center.y);
+                scene.position.z += (scene.position.z - center.z);
+                scope.controls.maxDistance = size * 10;
+                // 允许根据立方体大小放大和缩小一百倍
+                scope.camera.near = size / 10;
+                scope.camera.far = size * 10;
+                scope.camera.position.x = size / 2;
+                scope.camera.position.y = size / 5;
+                scope.camera.position.z = size / 3;
+                scope.camera.updateProjectionMatrix();
+                scope.camera.lookAt(scene.position);
+                scope.controls.update();
+                // 调整模型初始角度
+                scene.setRotationFromEuler(new THREE.Euler( -1.5, 1,0.05, 'YZX' ));
+                scope.scene.add( scene );
             };
 
             let onLoadMtl = function ( mtlParseResult ) {
@@ -91,22 +123,18 @@
         },
 
         resizeDisplayGL: function () {
-            this.controls.handleResize();
-
             this.recalcAspectRatio();
-            this.renderer.setSize( this.canvas.offsetWidth, this.canvas.offsetHeight, false );
-
+            // this.renderer.setSize( this.canvas.offsetWidth, this.canvas.offsetHeight, false );
             this.updateCamera();
         },
 
         recalcAspectRatio: function () {
-            this.aspectRatio = (this.canvas.offsetHeight === 0) ? 1 : this.canvas.offsetWidth / this.canvas.offsetHeight;
+            this.aspectRatio = window.innerWidth/window.innerHeight;
         },
 
         resetCamera: function () {
             this.camera.position.copy( this.cameraDefaults.posCamera );
             this.cameraTarget.copy( this.cameraDefaults.posCameraTarget );
-
             this.updateCamera();
         },
 

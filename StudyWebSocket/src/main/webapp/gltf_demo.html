@@ -43,6 +43,7 @@
         controls = new THREE.OrbitControls( camera,renderer.domElement );
         this.controls.maxAzimuthAngle = Math.PI * 0.3;
         this.controls.maxPolarAngle = Math.PI * 0.3;
+        // 是否允许自动旋转
         controls.autoRotate = true;
         // 是否允许摄像机旋转
         controls.enableRotate = true;
@@ -70,8 +71,10 @@
 
         loader.load(
             './models/ycxdl.gltf',
-            function (gltf) {
-                var object = gltf.scene||gltf.scene[0];
+            function (object3d) {
+                console.log(object3d);
+                const object = object3d.scene||object3d.scene[0];
+                console.log(object)
                 // 通过场景创建相应大小的3D立方体
                 const box = new THREE.Box3().setFromObject(object);
                 // 获取立方体的宽度、高度和深度
