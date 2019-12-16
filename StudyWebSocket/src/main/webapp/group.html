@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./threejs/build/three.js"></script>
+</head>
+<body>
+
+</body>
+<script>
+    try {
+        var scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+        var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+        var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+        var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+
+        var cubeA = new THREE.Mesh( geometry, material );
+        cubeA.position.set( 130, 130, 0 );
+
+        var cubeB = new THREE.Mesh( geometry, material );
+        cubeB.position.set( -100, -100, 0 );
+
+
+        var group = new THREE.Group();
+        group.add( cubeA );
+        group.add( cubeB );
+
+        scene.add( cubeA );
+        console.log(cubeA.size)
+        camera.position.x = 110;
+        camera.position.y = 110;
+        camera.lookAt(new THREE.Vector3(120, 120,120));
+        console.log(camera.up);
+        document.body.appendChild( renderer.domElement );
+        var animate = function () {
+            requestAnimationFrame( animate );
+            renderer.render( scene, camera );
+        };
+        animate();
+
+    }catch (e) {
+        console.log(e);
+    }
+
+</script>
+</html>

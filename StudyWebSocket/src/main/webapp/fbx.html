@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="./js/zlib.min.js"></script>
     <script src="./threejs/build/three.js"></script>
     <script src="./threejs/examples/js/libs/stats.min.js"></script>
     <script src="./threejs/examples/js/loaders/FBXLoader.js"></script>
@@ -23,7 +24,7 @@
     function init() {
         // 场景
         scene = new THREE.Scene();
-        scene.background = new THREE.Color( 0xFFFFFF);
+        scene.background = new THREE.Color( 0x080902);
 
         // 相机
         camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 1000 );
@@ -62,7 +63,7 @@
         let loader = new THREE.FBXLoader();
 
         loader.load(
-            './g524.fbx',
+            './ycxdl.fbx',
             function (gltf) {
                 var object = gltf.scene||gltf.scene[0]
                 // 通过场景创建相应大小的3D立方体
@@ -77,18 +78,18 @@
                 object.position.x += (object.position.x - center.x);
                 object.position.y += (object.position.y - center.y);
                 object.position.z += (object.position.z - center.z);
-                // controls.maxDistance = size * 10;
+                controls.maxDistance = size * 10;
                 // 允许根据立方体大小放大和缩小一百倍
                 camera.near = size / 10;
                 camera.far = size * 10;
-                // camera.updateProjectionMatrix();
+                camera.updateProjectionMatrix();
                 console.log(object);
 
 
-                // camera.position.copy(center);
-                camera.position.x = 0;
-                camera.position.y = -317000;
-                camera.position.z = 0;
+                camera.position.copy(center);
+                // camera.position.x = 0;
+                // camera.position.y = -317000;
+                // camera.position.z = 0;
                 // camera.rotation.x = -Math.PI / 2;
                 // camera.rotation.z = Math.PI *0.685;
                 // camera.rotation.y = 0;
