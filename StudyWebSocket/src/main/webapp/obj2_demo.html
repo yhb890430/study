@@ -17,7 +17,7 @@
     import { OrbitControls } from "./threejs/examples/jsm/controls/OrbitControls.js";
     import { MTLLoader } from "./threejs/examples/jsm/loaders/MTLLoader.js";
     import { OBJLoader2 } from "./threejs/examples/jsm/loaders/OBJLoader2.js";
-    import { OBJLoader } from "./threejs/examples/jsm/loaders/OBJLoader.js";
+    import { MtlObjBridge } from "./threejs/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js";
 
 
     const OBJLoader2Example = function ( elementToBindTo ) {
@@ -30,9 +30,9 @@
         this.cameraDefaults = {
             posCamera: new THREE.Vector3( 0.0, 175.0, 500.0 ),
             posCameraTarget: new THREE.Vector3( 0, 0, 0 ),
-            near: 0.1,
-            far: 10000,
-            fov: 45
+            near: 0.01,
+            far: 1000,
+            fov: 75
         };
         this.camera = null;
         this.cameraTarget = this.cameraDefaults.posCameraTarget;
@@ -47,7 +47,7 @@
         initGL: function () {
             this.renderer = new THREE.WebGLRenderer( {
                 antialias: true,
-                autoClear: true
+                // autoClear: true
             } );
             this.renderer.setClearColor( 0x050505 );
             this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -57,8 +57,8 @@
             this.camera = new THREE.PerspectiveCamera( this.cameraDefaults.fov, this.aspectRatio, this.cameraDefaults.near, this.cameraDefaults.far );
             this.resetCamera();
             this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-            this.controls.maxAzimuthAngle = Math.PI * 0.3;
-            this.controls.maxPolarAngle = Math.PI * 0.3;
+            // this.controls.maxAzimuthAngle = Math.PI * 0.3;
+            // this.controls.maxPolarAngle = Math.PI * 0.3;
             // this.controls.autoRotate = true;
             // 是否允许摄像机旋转
             this.controls.enableRotate = true;
@@ -66,16 +66,17 @@
             this.controls.enableZoom = true;
             // 是否允许摄像机平移
             this.controls.update();
-            let ambientLight = new THREE.AmbientLight( 0x404040 );
-            let directionalLight1 = new THREE.DirectionalLight( 0xC0C090 );
-            let directionalLight2 = new THREE.DirectionalLight( 0xC0C090 );
 
-            directionalLight1.position.set( - 100, - 50, 100 );
-            directionalLight2.position.set( 100, 50, - 100 );
+            let ambientLight = new THREE.AmbientLight(0xccffcc);
+            let directionalLight1 = new THREE.DirectionalLight( 0xffffff,1 );
+            // let directionalLight2 = new THREE.DirectionalLight( 0xC0C090 );
+            //
+            // directionalLight1.position.set( - 100, - 50, 100 );
+            // directionalLight2.position.set( 100, 50, - 100 );
 
-            // this.scene.add( directionalLight1 );
+            this.scene.add( directionalLight1 );
             // this.scene.add( directionalLight2 );
-            // this.scene.add( ambientLight );
+            this.scene.add( ambientLight );
             this.container.appendChild(this.renderer.domElement);
             // let helper = new THREE.GridHelper( 1200, 60, 0xFF4444, 0x404040 );
             // this.scene.add( helper );
@@ -87,6 +88,7 @@
             let scope = this;
             let objLoader2 = new OBJLoader2();
             let callbackOnLoad = function ( object3d ) {
+                console.log(object3d);
                 const scene = object3d;
                 // 通过场景创建相应大小的3D立方体
                 const box = new THREE.Box3().setFromObject(scene);
@@ -99,7 +101,7 @@
                 scene.position.y += (scene.position.y - center.y);
                 scene.position.z += (scene.position.z - center.z);
                 scope.controls.maxDistance = size * 10;
-                // 允许根据立方体大小放大和缩小一百倍
+                // 允许根据立方体大小放大和缩小十倍
                 scope.camera.near = size / 10;
                 scope.camera.far = size * 10;
                 scope.camera.position.x = size / 2;
@@ -110,12 +112,26 @@
                 scope.controls.update();
                 // 调整模型初始角度
                 scene.setRotationFromEuler(new THREE.Euler( -1.5, 1,0.05, 'YZX' ));
+
+                // var materials = object3d.detail.loaderRootNode.children;
+                // //console.log(event.detail.loaderRootNode);
+                // for(var name in materials){
+                //
+                //     materials[name].material.side = THREE.DoubleSide;
+                //     materials[name].material.needsUpdate = true;
+                //     //  console.log( materials[name].material);
+                // }
                 scope.scene.add( scene );
             };
 
             let onLoadMtl = function ( mtlParseResult ) {
+                console.log(mtlParseResult)
+                // 设置模型名称
                 objLoader2.setModelName( modelName );
-                objLoader2.setLogging( true, true );
+                // 添加MTL材质
+                objLoader2.addMaterials( MtlObjBridge.addMaterialsFromMtlLoader( mtlParseResult ) );
+                // 是否开启日志
+                // objLoader2.setLogging( true, true );
                 objLoader2.load( './models/ycxdl.obj', callbackOnLoad, null, null, null );
             };
             let mtlLoader = new MTLLoader();

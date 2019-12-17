@@ -44,12 +44,13 @@
         this.controls.maxAzimuthAngle = Math.PI * 0.3;
         this.controls.maxPolarAngle = Math.PI * 0.3;
         // 是否允许自动旋转
-        controls.autoRotate = true;
+        controls.autoRotate = false;
         // 是否允许摄像机旋转
         controls.enableRotate = true;
         // 是否允许摄像机变焦(缩小和放大)
         controls.enableZoom = true;
         // 是否允许摄像机平移
+        controls.enablePan = false;
         controls.update();
         container.appendChild(renderer.domElement);
 
