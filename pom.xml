@@ -18,6 +18,9 @@
         <module>StudyWebService</module>
         <module>StudySpring</module>
         <module>StudyJdk</module>
+        <module>StudyMongoDb</module>
+        <module>PdfUtil</module>
+        <module>common-pdf</module>
     </modules>
 
     <!--阿里云镜像-->
