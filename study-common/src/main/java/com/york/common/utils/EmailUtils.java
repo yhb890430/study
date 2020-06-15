@@ -17,7 +17,7 @@ import java.util.*;
  * @description 邮件工具类
  * @create 2017/10/5 9:31
  **/
-public final class EmailUtil {
+public final class EmailUtils {
 
     private static final Properties PROPERTIES = new Properties();
 
@@ -36,7 +36,7 @@ public final class EmailUtil {
     static {
         InputStream is = null;
         try {
-            is = EmailUtil.class.getResourceAsStream("/email.properties");
+            is = EmailUtils.class.getResourceAsStream("/email.properties");
             PROPERTIES.load(is);
             PROTOCOL =  PROPERTIES.getProperty("protocol");
             HOST = PROPERTIES.getProperty("host");
@@ -236,6 +236,6 @@ public final class EmailUtil {
     }
 
     public static void main(String[] args) {
-        EmailUtil.sendMail("测试邮件", "22222", "information@datadrawing.com", "12QW34er", "York.yuan@datadrawing.com");
+        EmailUtils.sendMail("测试邮件", "22222", "information@datadrawing.com", "12QW34er", "York.yuan@datadrawing.com");
     }
 }

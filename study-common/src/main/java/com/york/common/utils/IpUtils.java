@@ -83,6 +83,6 @@ public class IpUtils {
         if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
             ip = request.getRemoteAddr();
         }
-        return ip;
+        return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : ip;
     }
 }
