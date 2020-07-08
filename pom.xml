@@ -44,7 +44,7 @@
         <log4j2.version>2.12.1</log4j2.version>
         <quartz.version>2.3.0</quartz.version>
         <junit.version>4.12</junit.version>
-        <mysql.version>5.1.45</mysql.version>
+        <mysql.version>8.0.16</mysql.version>
     </properties>
 
     <!-- dependencyManagement主要用于jar包版本管理，但不会实际引入jar包-->
